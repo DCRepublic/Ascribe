@@ -31,6 +31,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.server
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik"
+        - "traefik.http.routers.ascribewss.entrypoints=https"
+        - "traefik.http.routers.ascribewss.rule=Host(`ascribe.sccs.swarthmore.edu`) && PathPrefix(`/server`)"
+        - "traefik.http.routers.ascribewss.tls=true"
+        - "traefik.http.routers.ascribewss.tls.certresolver=letsEncrypt"
+        - "traefik.http.services.ascribewss.loadbalancer.server.port=5557"
     env_file:
       - .env
     networks:

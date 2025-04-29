@@ -34,7 +34,8 @@ export default (props: any) => {
   const [loading, setLoading] = useState(true);
 
   const provider = new HocuspocusProvider({
-    url: "ws://ascribe-server:5557",
+    url: "wss://ascribe.sccs.swarthmore.edu/server",
+    // url:"ws://localhost:5557//local
     name: `${props.id}`,
   });
   /*
