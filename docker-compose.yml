@@ -93,6 +93,7 @@ services:
     command: sh -c "sleep 10 && npx prisma studio --hostname 0.0.0.0"
 
 volumes:
+  redis_data:
   ascribe-dbdata:
     name: ascribe-dbdata
     driver_opts:
