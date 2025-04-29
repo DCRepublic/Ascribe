@@ -43,9 +43,9 @@ module.exports = {
       themes: {
         light: {
           colors: {
-            background: "#C2EDFF", // main background
-            background_navbar: "#AD9BAA", // navbar
-            sidebar_background: "#AD9BAA", // sidebar
+            background: "rgb(240, 235, 248)", // main background
+            background_navbar: "#B594B6", // navbar
+            sidebar_background: "#B594B6", // sidebar
             background_layer: "#31425E", // unsure
             foreground: "#2F344B", // text colors
             light_foreground: "#F1F1F1", // unsure
@@ -53,13 +53,13 @@ module.exports = {
               DEFAULT: "#9FADBC", // unsure
               foreground: "#31425E", // unsure
             },
-            secondary: "#56765A", // affects the Get Started Button and other highlighted buttons
+            secondary: "#B594B6", // affects the Get Started Button and other highlighted buttons
             focus: "#3E5641", // unsure
           },
         },
         dark: {
           colors: {
-            background: "#061D23", // affects main section background, below navbar
+            background: "#0a313b", // affects main section background, below navbar
             background_navbar: "#2F232B", // obviously affects the navbar background
             sidebar_background: "#2F232B", // affects the colors of the sidebar
             background_layer: "#2C2C33", // seemingly affects nothing
