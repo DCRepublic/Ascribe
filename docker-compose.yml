@@ -44,6 +44,7 @@ services:
       - .env
     networks:
       - internal
+      - traefik
 
   ascribe-db:
     image: postgres:16.4-bullseye
