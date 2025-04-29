@@ -22,8 +22,8 @@ import CharacterCount from "@tiptap/extension-character-count";
 import Collaboration from "@tiptap/extension-collaboration";
 import TextAlign from "@tiptap/extension-text-align";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
-
 import "@tiptap/core";
+import { HocuspocusProviderWebsocket } from "@hocuspocus/provider";
 
 import FontFamily from "@tiptap/extension-font-family"; //fonts are not working -----------------------Commented out - J
 
@@ -37,10 +37,16 @@ const editorProps = {
 export default (props: any) => {
   const [loading, setLoading] = useState(true);
 
+  const socket = new HocuspocusProviderWebsocket({
+    url: "wss://ascribe.sccs.swarthmore.edu/server", // or `url` if using `HocuspocusProviderWebsocket`
+  });
+
   const provider = new HocuspocusProvider({
-    url: "wss://ascribe.sccs.swarthmore.edu/server",
-    // url:"ws://localhost:5557//local
+    //url: "wss://ascribe.sccs.swarthmore.edu/server",
+    websocketProvider: socket,
+    // url: "ws://localhost:5557", //local
     name: `${props.id}`,
+    token: "",
   });
 
   const editor = useEditor({

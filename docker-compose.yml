@@ -61,6 +61,15 @@ services:
       timeout: 5s
       retries: 5
 
+  ascribe-redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    networks:
+      - internal
+    volumes:
+      - redis_data:/data
+
   ascribe-studio:
     image: registry.sccs.swarthmore.edu/cs77-s25/ascribe/ascribe:latest
     env_file:

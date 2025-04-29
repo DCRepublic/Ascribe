@@ -1,10 +1,11 @@
 import { Server } from "@hocuspocus/server";
 import { Database } from "@hocuspocus/extension-database";
+import { Redis } from "@hocuspocus/extension-redis";
 
 //@ts-ignore
 import prisma from "./lib/prisma.ts";
 
-const server = Server.configure({
+const server = new Server({
   name: "ascribe-server",
   port: 5557,
   quiet: false,
@@ -12,6 +13,7 @@ const server = Server.configure({
     new Database({
       // Return a Promise to retrieve data …
       fetch: async ({ documentName }) => {
+        console.log(documentName);
         return new Promise(async (resolve, reject) => {
           try {
             let doc = await prisma.docs.findUnique({
@@ -48,6 +50,10 @@ const server = Server.configure({
           },
         });
       },
+    }),
+    new Redis({
+      host: "ascribe-redis",
+      port: 6379,
     }),
   ],
 });

@@ -3,7 +3,11 @@ import "@/styles/tiptap.css";
 import { useEditor, EditorContent } from "@tiptap/react";
 import React, { useState } from "react";
 import { CircularProgress } from "@heroui/react";
-import { HocuspocusProvider, TiptapCollabProvider } from "@hocuspocus/provider";
+import {
+  HocuspocusProvider,
+  HocuspocusProviderWebsocket,
+  TiptapCollabProvider,
+} from "@hocuspocus/provider";
 import CodeBlock from "@tiptap/extension-code-block";
 import Underline from "@tiptap/extension-underline";
 import TextStyle from "@tiptap/extension-text-style";
@@ -33,24 +37,30 @@ const editorProps = {
 export default (props: any) => {
   const [loading, setLoading] = useState(true);
 
-  const provider = new HocuspocusProvider({
-    url: "wss://ascribe.sccs.swarthmore.edu/server",
-    // url:"ws://localhost:5557//local
-    name: `${props.id}`,
+  const socket = new HocuspocusProviderWebsocket({
+    url: "wss://ascribe.sccs.swarthmore.edu/server", // or `url` if using `HocuspocusProviderWebsocket`
   });
-  /*
-  let provider = new WebrtcProvider("example-document", doc);
 
+  const provider = new HocuspocusProvider({
+    //url: "wss://ascribe.sccs.swarthmore.edu/server",
+    websocketProvider: socket,
+    // url: "ws://localhost:5557", //local
+    name: `${props.id}`,
+    token: "",
+  });
+
+  /*
   let provider = new TiptapCollabProvider({
     name: `${props.name + "-" + props.id}`, // Unique document identifier for syncing. This is your document name.
     appId: process.env.NEXT_PUBLIC_APPID || "", // Your Cloud Dashboard AppID or `baseURL` for on-premises
     token: props.jwt,
-    document: doc,
+    //document: doc,
     preserveConnection: false,
     user: `${props.session?.user?.name}`,
     broadcast: true,
     // The onSynced callback ensures initial content is set only once using editor.setContent(), preventing repetitive content loading on editor syncs.
     onSynced(editor: any) {
+      setLoading(false);
       //console.log(props.content);
     },
   });

@@ -81,7 +81,9 @@ export const BoardCard = (props: any) => {
   return (
     <Card
       isFooterBlurred
-      className={"dark:bg-slate-800 w-44 h-56 border-dashed  "}
+      className={
+        "dark:bg-slate-800 w-44 h-56   dark:border-white border-1 border-black "
+      }
     >
       <Link
         className="hover:cursor-pointer h-full"
