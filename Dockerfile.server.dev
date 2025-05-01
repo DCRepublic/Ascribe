@@ -1,0 +1,10 @@
+FROM node:lts-bullseye
+ENV NODE_ENV=development
+WORKDIR /usr/src/app
+EXPOSE 5557
+RUN chown -R node /usr/src/app
+USER node
+
+CMD ["npx", "tsx", "./src/app/server.ts"]
+
+
