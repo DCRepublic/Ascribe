@@ -49,14 +49,6 @@ services:
       - internal
     command: sh -c "sleep 10 && npx prisma studio"
 
-  ascribe-redis:
-    image: redis:latest
-    ports:
-      - 6379:6379
-    networks:
-      - internal
-    volumes:
-      - redis_data:/data
   ascribe-server:
     container_name: ascribe-server
     build:
@@ -65,8 +57,6 @@ services:
     volumes:
       #Mapping your current dir to the container so your changes can reload in real time
       - .:/usr/src/app
-    environment:
-      DATABASE_URL: postgresql://postgres:example@ascribe-db-dev:5432/ascribe_db
     env_file:
       - .env.local
     ports:

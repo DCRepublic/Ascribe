@@ -1,12 +1,11 @@
 "use client";
 import "@/styles/tiptap.css";
 import { useEditor, EditorContent } from "@tiptap/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CircularProgress } from "@heroui/react";
 import {
   HocuspocusProvider,
   HocuspocusProviderWebsocket,
-  TiptapCollabProvider,
 } from "@hocuspocus/provider";
 import CodeBlock from "@tiptap/extension-code-block";
 import Underline from "@tiptap/extension-underline";
@@ -23,119 +22,99 @@ import "@tiptap/core";
 
 import FontFamily from "@tiptap/extension-font-family"; //fonts are not working -----------------------Commented out - J
 
-// This allows font family to work
-import "@tiptap/core";
-import MenuBar from "@/components/MenuBar.js";
+import MenuBar from "@/components/MenuBar";
+import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
 const editorProps = {
   attributes: {
     class:
-      "prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none h-[65vh]  overflow-y-scroll",
+      "prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none h-[85vh] p-5  overflow-y-scroll dark:bg-neutral-900 bg-white",
   },
 };
 
-export default (props: any) => {
-  const [loading, setLoading] = useState(true);
+const CollaborativeEditor = (props: {
+  slug: string;
+  provider: HocuspocusProvider;
+  session: Session | null;
+}) => {
+  const session = useSession();
 
-  const socket = new HocuspocusProviderWebsocket({
-    url: "wss://ascribe.sccs.swarthmore.edu/server", // or `url` if using `HocuspocusProviderWebsocket`
-  });
+  let provider = props.provider;
+  /**
+   * if you want to load initial content to the editor, the safest way to do so is by applying an initial Yjs update.
+   * Yjs updates can safely be applied multiple times, while using `setContent` or similar Tiptap commands may result in
+   * duplicate content in the Tiptap editor.
+   *
+   * The easiest way to generate the Yjs update (`initialContent` above) is to do something like
+   *
+   * ```
+   * console.log(Y.encodeStateAsUpdate(provider.props.document).toString())
+   * ```
+   *
+   * after you have filled the editor with the desired content.
+   */
+  //Y.applyUpdate(props.provider.document, Uint8Array.from(initialContent));
 
-  const provider = new HocuspocusProvider({
-    //url: "wss://ascribe.sccs.swarthmore.edu/server",
-    websocketProvider: socket,
-    // url: "ws://localhost:5557", //local
-    name: `${props.id}`,
-    token: "",
-  });
+  useEffect(() => {
+    if (!provider) return;
+    if (provider.configuration.websocketProvider.status === "connecting") {
+      console.log("Not connected... Connecting");
+      provider.configuration.websocketProvider.connect();
+    }
+  }, [props.provider]);
 
-  /*
-  let provider = new TiptapCollabProvider({
-    name: `${props.name + "-" + props.id}`, // Unique document identifier for syncing. This is your document name.
-    appId: process.env.NEXT_PUBLIC_APPID || "", // Your Cloud Dashboard AppID or `baseURL` for on-premises
-    token: props.jwt,
-    //document: doc,
-    preserveConnection: false,
-    user: `${props.session?.user?.name}`,
-    broadcast: true,
-    // The onSynced callback ensures initial content is set only once using editor.setContent(), preventing repetitive content loading on editor syncs.
-    onSynced(editor: any) {
-      setLoading(false);
-      //console.log(props.content);
+  const editor = useEditor(
+    {
+      extensions: [
+        FontFamily,
+        Underline,
+        Color.configure({ types: [TextStyle.name, ListItem.name] }),
+
+        TextAlign.configure({
+          types: ["heading", "paragraph"],
+        }),
+        TextStyle.configure({ mergeNestedSpanStyles: true }),
+        StarterKit.configure({
+          heading: {
+            levels: [1, 2, 3, 4],
+          },
+          history: false,
+          bulletList: {
+            keepMarks: true,
+            keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
+          },
+          orderedList: {
+            keepMarks: true,
+            keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
+          },
+        }),
+        CharacterCount,
+        Collaboration.extend().configure({
+          document: props.provider.document,
+        }),
+        CollaborationCursor.configure({
+          provider,
+          user: {
+            name: `${props.session?.user?.name}`,
+            color: "#77BA99",
+          },
+        }),
+      ],
+      editorProps: editorProps,
+      injectCSS: true,
+
+      // immediatelyRender needs to be `false` when using SSR
+      immediatelyRender: false,
     },
-  });
-*/
-  const editor = useEditor({
-    //enableContentCheck: true,
-    // onContentError: ({ disableCollaboration }) => {
-    //  disableCollaboration();
-    //},
-
-    onCreate: ({ editor: currentEditor }) => {
-      provider.on("synced", () => {
-        setLoading(false);
-      });
-    },
-    extensions: [
-      FontFamily,
-      Underline,
-      Color.configure({ types: [TextStyle.name, ListItem.name] }),
-
-      TextAlign.configure({
-        types: ["heading", "paragraph"],
-      }),
-      TextStyle.configure({ mergeNestedSpanStyles: true }),
-      StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3, 4],
-        },
-        history: false,
-        bulletList: {
-          keepMarks: true,
-          keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
-        },
-        orderedList: {
-          keepMarks: true,
-          keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
-        },
-      }),
-      CharacterCount,
-      Collaboration.extend().configure({
-        document: provider.document,
-      }),
-      CollaborationCursor.configure({
-        provider,
-        user: {
-          name: `${props.session.user.name}`,
-          color: "#77BA99",
-        },
-      }),
-    ],
-    editorProps: editorProps,
-    injectCSS: true,
-    immediatelyRender: false,
-  });
+    [props.provider.document]
+  );
 
   return (
     <>
-      {loading ? (
-        <CircularProgress
-          className="justify-self-center"
-          label="Fetching Shared Document.... Connecting"
-        />
-      ) : (
-        <>
-          <MenuBar name={props.name} editor={editor} />
-
-          <EditorContent
-            className={"dark:bg-neutral-900 bg-slate-50 rounded-md mt-5 "}
-            editor={editor}
-          />
-          <div className="absolute bottom-5 right-14">
-            {editor?.storage.characterCount.words()}
-          </div>
-        </>
-      )}
+      <MenuBar editor={editor} /> <EditorContent editor={editor} />{" "}
     </>
   );
 };
+
+export default CollaborativeEditor;

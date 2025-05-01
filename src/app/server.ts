@@ -1,15 +1,16 @@
+"user server";
 import { Server } from "@hocuspocus/server";
 import { Database } from "@hocuspocus/extension-database";
-import { Redis } from "@hocuspocus/extension-redis";
+import { Logger } from "@hocuspocus/extension-logger";
 
-//@ts-ignore
-import prisma from "./lib/prisma.ts";
+import prisma from "@/app/lib/prisma";
 
 const server = new Server({
   name: "ascribe-server",
   port: 5557,
   quiet: false,
   extensions: [
+    new Logger(),
     new Database({
       // Return a Promise to retrieve data …
       fetch: async ({ documentName }) => {
@@ -50,10 +51,6 @@ const server = new Server({
           },
         });
       },
-    }),
-    new Redis({
-      host: "ascribe-redis",
-      port: 6379,
     }),
   ],
 });

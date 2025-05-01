@@ -1,36 +1,12 @@
-import React from "react";
-import { genJWT, getDocByID } from "@/app/actions/actions";
-import Tiptap from "@/components/tiptap";
-import TipTapShared from "@/components/TipTapShared";
-import { auth } from "@/app/auth";
+import TipTapEditor from "@/components/TipTapEditor";
+import { getServerSession } from "next-auth";
 
-export default async function IndexPage({
-  params,
-}: {
+export default async function Home(props: {
   params: Promise<{ docid: string }>;
 }) {
-  const slug = await params;
+  const params = await props.params;
+  const slug = params.docid;
+  const session = await getServerSession();
 
-  const document = await getDocByID(parseInt(slug.docid));
-  const jwt = await genJWT();
-  const session = await auth();
-
-  return (
-    <>
-      <div className="w-full ">
-        {document != null ? (
-          document?.shared_access.length > 0 ? (
-            <TipTapShared
-              id={document.id}
-              name={document?.name}
-              session={session}
-              jwt={jwt}
-            ></TipTapShared>
-          ) : (
-            <Tiptap id={document.id} name={document?.name} session={session} />
-          )
-        ) : null}
-      </div>
-    </>
-  );
+  return <TipTapEditor slug={slug} session={session} />;
 }

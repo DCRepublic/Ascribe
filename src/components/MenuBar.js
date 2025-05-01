@@ -22,7 +22,7 @@ import RedoIcon from "@mui/icons-material/Redo";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import ColorLensIcon from "@mui/icons-material/ColorLens";
 
-export default ({ name, editor }) => {
+export default ({ editor }) => {
   if (!editor) {
     return null;
   }
@@ -36,9 +36,8 @@ export default ({ name, editor }) => {
 
   return (
     <>
-      <div className="grid grid-cols-12">
-        <div className="text-xl font-bold col-span-1">{name}</div>
-        <div className="justify-start col-start-2">
+      <div className="">
+        <div className="justify-self-center">
           <ButtonGroup>
             <Button
               color="secondary"
