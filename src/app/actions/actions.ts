@@ -414,3 +414,67 @@ export async function calcStats(id: number | undefined) {
     return output;
   }
 }
+
+export async function calcStatsDoc(id: number | undefined) {
+  if (id) {
+    //Open ai, I ran out of credits apparently and had to switch to gemini?
+    //const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+    let response;
+    let response2;
+    let output: any = {};
+    const doc = await prisma.docs.findUnique({
+      where: { id: id },
+    });
+    console.log(doc);
+
+    let text = "";
+
+    if (doc) {
+      if (doc.text) {
+        const buffer = Buffer.from(doc.text, "base64"); // decode base64 back
+        const readableString = buffer.toString("utf-8");
+        text = text + "=======" + readableString.replace(/[^\x20-\x7E]/g, "");
+      }
+    }
+
+    if (text != "") {
+      response = await client.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: text,
+        config: {
+          systemInstruction:
+            "Each block of text separated by ======= is a seperate document. Provide a summary of each document in 30 words max per document. DONT USE MARKDOWN",
+        },
+      });
+      response2 = await client.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: text,
+        config: {
+          systemInstruction:
+            "Find the 10 most important and inclusive words in the original text used to describe this document, separated by only a comma. Do not make new words, only use words that are in the original text, if there are less than 10, you can return less than 10.",
+        },
+      });
+      /* CHAT - if you have credits then go for it
+      response = await client.responses.create({
+        model: "gpt-4.1",
+        instructions: "Summarize the following text in 50 words. ",
+        input: text,
+      });
+      response2 = await client.responses.create({
+        model: "gpt-4.1",
+        instructions:
+          "Find the 10 most occuring words in the following text and reply with only those words, in descending order by frequency, separated by only a space",
+        input: text,
+      });
+      */
+      output["summary"] = response?.text;
+      output["cloud"] = response2?.text?.split(",");
+    }
+
+    console.log(output);
+
+    return output;
+  }
+}

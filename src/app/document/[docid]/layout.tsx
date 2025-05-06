@@ -20,6 +20,7 @@ export default function Layout({
   useEffect(() => {
     const newlyCreatedSocket = new HocuspocusProviderWebsocket({
       //url: "ws://localhost:5557",
+      //url: process.env.TIPTAPURL || "",
       url: "wss://ascribe.sccs.swarthmore.edu/server",
     });
     // const newlyCreatedSocket = new TiptapCollabProviderWebsocket({

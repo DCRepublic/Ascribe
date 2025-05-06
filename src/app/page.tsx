@@ -15,15 +15,25 @@ export default function IndexPage() {
             Ascribe helps you your classmates be more efficent with your
             note-taking.
           </div>
-          <div className="mt-10 gap-4 w-full ">
+          <div className="mt-10 grid gap-5 grid-cols-4 w-full ">
             <Link href="/board">
               <Button
-                color="secondary"
+                color="primary"
                 variant="shadow"
                 size="lg"
                 className="justify-self-center"
               >
                 Get Started
+              </Button>
+            </Link>
+            <Link href="https://docs.google.com/forms/d/e/1FAIpQLSf4Oxa5FzIk0D9pz-FLVR79g4Y-SSCuVLX7ZKblyjOlwmDXNQ/viewform?usp=dialog">
+              <Button
+                color="default"
+                variant="faded"
+                size="lg"
+                className="justify-self-center"
+              >
+                Leave a Review
               </Button>
             </Link>
           </div>

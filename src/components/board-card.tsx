@@ -40,7 +40,8 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import { useState, useMemo, useEffect } from "react";
 import { theUser } from "@/lib/types";
 import { User as UserType } from "@prisma/client";
-
+import FolderIcon from "@mui/icons-material/Folder";
+import FolderSharedIcon from "@mui/icons-material/FolderShared";
 export const BoardCard = (props: any) => {
   const router = useRouter();
   const [selectedKeys, setSelectedKeys] = useState<any>(new Set());
@@ -82,17 +83,22 @@ export const BoardCard = (props: any) => {
     <Card
       isFooterBlurred
       className={
-        "dark:bg-slate-800 w-44 h-56   dark:border-white border-1 border-black "
+        "dark:bg-slate-800 w-52 h-24   dark:border-white border-1 border-black "
       }
     >
       <Link
         className="hover:cursor-pointer h-full"
         href={`/board/${props.board?.id}`}
       >
-        <CardHeader>{props.board?.name}</CardHeader>
-        <CardBody className="justify-items-center w-full text-sm ">
-          {props.board?.description.replace(/<\/?[^>]+(>|$)/g, "")}
-        </CardBody>
+        <CardHeader className="text-sm ">
+          {props.board?.shared_access.length == 0 ? (
+            <FolderIcon className="mr-2" />
+          ) : (
+            <FolderSharedIcon className="mr-2" />
+          )}
+
+          {props.board?.name.substring(0, 20)}
+        </CardHeader>
       </Link>
 
       <CardFooter className="text-sm justify-end">
@@ -110,7 +116,7 @@ export const BoardCard = (props: any) => {
               selectedKeys={selectedKeys}
               selectionMode="multiple"
               variant="flat"
-              className="max-h-20 overflow-y-scroll"
+              className="max-h-28 overflow-y-scroll"
               onSelectionChange={setSelectedKeys}
             >
               <>

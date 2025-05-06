@@ -86,7 +86,7 @@ export default function IndexPage({
           {(onClose) => (
             <>
               {stats == undefined ? (
-                <ModalBody className="ml-auto mr-auto]">
+                <ModalBody className="ml-auto mr-auto">
                   <CircularProgress
                     className="justify-items-center"
                     aria-label="Loading..."

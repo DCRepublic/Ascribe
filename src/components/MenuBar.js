@@ -5,6 +5,14 @@ import {
   DropdownMenu,
   DropdownItem,
   DropdownTrigger,
+  useDisclosure,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  CircularProgress,
+  Chip,
 } from "@heroui/react";
 
 //Icons:
@@ -21,11 +29,16 @@ import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import ColorLensIcon from "@mui/icons-material/ColorLens";
+import { calcStatsDoc } from "@/app/actions/actions";
+import React from "react";
 
-export default ({ editor }) => {
+export default ({ editor, slug }) => {
   if (!editor) {
     return null;
   }
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [stats, setStats] = React.useState(undefined);
 
   const sizeOptions = [
     { key: 1, size: 1 },
@@ -34,9 +47,17 @@ export default ({ editor }) => {
     { key: 4, size: 4 },
   ];
 
+  async function getStats() {
+    if (slug) {
+      let stats = await calcStatsDoc(parseInt(slug));
+
+      setStats(stats);
+    }
+  }
+
   return (
     <>
-      <div className="">
+      <div className="ml-20">
         <div className="justify-self-center">
           <ButtonGroup>
             <Button
@@ -349,9 +370,63 @@ export default ({ editor }) => {
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
+            <Button
+              color="secondary"
+              variant="solid"
+              className=""
+              onPress={() => {
+                onOpen();
+                getStats();
+              }}
+            >
+              Generate Stats
+            </Button>
           </ButtonGroup>
         </div>
       </div>
+
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              {stats == undefined ? (
+                <ModalBody className="ml-auto mr-auto">
+                  <CircularProgress
+                    className="justify-items-center"
+                    aria-label="Loading..."
+                    label="Generating Overview"
+                  />
+                </ModalBody>
+              ) : (
+                <>
+                  <ModalHeader className="flex flex-col gap-1 text-xl text-center">
+                    Summary Of Note
+                  </ModalHeader>
+                  <ModalBody>
+                    SUMMARY:
+                    <div>{stats?.summary}</div>
+                    <div>
+                      WORDCLOUD:
+                      <div className="grid grid-cols-5 gap-5 justify-items-center mt-5">
+                        {stats?.cloud?.map((word) => (
+                          <Chip color="primary" size="lg">
+                            {word}
+                          </Chip>
+                        ))}
+                      </div>
+                    </div>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color="danger" variant="light" onPress={onClose}>
+                      Close
+                    </Button>
+                  </ModalFooter>
+                </>
+              )}
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 };

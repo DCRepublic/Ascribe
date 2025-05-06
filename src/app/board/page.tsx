@@ -126,7 +126,7 @@ export default function IndexPage() {
             </Button>
           </Tooltip>
 
-          <div className="overflow-y-scroll h-[55vh] grid grid-cols-6 gap-2 justify-items-center mt-5">
+          <div className="overflow-y-scroll h-[55vh] grid grid-cols-5 gap-2 justify-items-center mt-5">
             {isLoading != true
               ? data
                   ?.sort((a: any, b: any) => {

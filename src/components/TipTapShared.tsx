@@ -29,7 +29,7 @@ import { Session } from "next-auth";
 const editorProps = {
   attributes: {
     class:
-      "prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none h-[85vh] p-5  overflow-y-scroll dark:bg-neutral-900 bg-white",
+      "prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none h-[78vh] p-5  overflow-y-scroll dark:bg-neutral-900 bg-white",
   },
 };
 
@@ -112,7 +112,8 @@ const CollaborativeEditor = (props: {
 
   return (
     <>
-      <MenuBar editor={editor} /> <EditorContent editor={editor} />{" "}
+      <MenuBar editor={editor} slug={props.slug} />{" "}
+      <EditorContent editor={editor} />{" "}
     </>
   );
 };

@@ -30,6 +30,7 @@ import { User as UserType } from "@prisma/client";
 export const DocCard = (props: any) => {
   const [selectedKeys, setSelectedKeys] = useState<any>(new Set());
   const [users, setUsers] = useState<UserType[] | undefined>();
+  const decoder = new TextDecoder("utf-8", { fatal: false });
 
   async function getUsers() {
     let theUsers: any = await getAllUsers();
@@ -67,10 +68,6 @@ export const DocCard = (props: any) => {
         className="cursor-pointer h-full"
       >
         <CardHeader className="p-5">{props.doc?.name}</CardHeader>
-
-        <CardBody className="p-5">
-          {props.doc?.text?.replace(/<\/?[^>]+(>|$)/g, "").substring(0, 20)}...
-        </CardBody>
       </Link>
       <CardFooter className="justify-end">
         <ButtonGroup>
@@ -87,7 +84,7 @@ export const DocCard = (props: any) => {
               selectedKeys={selectedKeys}
               selectionMode="multiple"
               variant="flat"
-              className="max-h-20 overflow-y-scroll"
+              className="max-h-28 overflow-y-scroll"
               onSelectionChange={setSelectedKeys}
             >
               <>
